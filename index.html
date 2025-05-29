@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Crypto Ticker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="badges"></div>
+  <div class="interval-selector">
+    <select id="interval" onchange="updateInterval(this.value)">
+      <option value="5m" selected>5m</option>
+      <option value="15m">15m</option>
+      <option value="30m">30m</option>
+      <option value="1h">1h</option>
+      <option value="1d">1d</option>
+    </select>
+  </div>
+  <div class="loading" id="loading">Loading...</div>
+  <div id="ticker"></div>
+  <div class="error" id="error"></div>
+  <script src="chart.js"></script>
+  <script src="app.js"></script>
+</body>
+</html> 

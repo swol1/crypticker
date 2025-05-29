@@ -1,0 +1,202 @@
+html, body {
+  min-width: 350px;
+  margin: 0;
+  padding: 5px 0 0 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: #0a0a0a;
+  color: #ffffff;
+  font-family: -apple-system, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+body {
+  box-sizing: border-box;
+}
+
+#ticker {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0px 16px 6px;
+  box-sizing: border-box;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+  max-height: 28px;
+}
+
+.badge {
+  padding: 2px 6px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  font-size: 0.6em;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  letter-spacing: -0.5px;
+}
+
+.badge.active {
+  border-color: #64ffda;
+  background: rgba(100, 255, 218, 0.1);
+}
+
+.badge:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.coin {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  max-height: 52px;
+  box-sizing: border-box;
+}
+
+.coin:last-child {
+  margin-bottom: 0;
+}
+
+.coin-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.symbol {
+  font-weight: 500;
+  color: #fff;
+  font-size: 0.9em;
+}
+
+.volume {
+  font-size: 0.7em;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.price-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.price {
+  font-family: 'JetBrains Mono', 'SF Mono', 'Menlo', monospace;
+  color: #64ffda;
+  font-size: 0.9em;
+}
+
+.price-down {
+  color: #f44336;
+}
+
+.change {
+  font-size: 0.75em;
+  font-weight: 500;
+}
+
+.change.positive {
+  color: #4caf50;
+}
+
+.change.negative {
+  color: #f44336;
+}
+
+.chart-container {
+  width: 80px;
+  height: 30px;
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.interval-selector {
+  display: flex;
+  justify-content: flex-end;
+  margin: 10px 0 5px 0;
+  padding: 0 16px;
+  position: relative;
+}
+
+.interval-selector select {
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 2px 14px 2px 6px;
+  border-radius: 8px;
+  font-size: 0.6em;
+  font-weight: normal;
+  font-family: -apple-system, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  height: 24px;
+  text-align: center;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+}
+
+.interval-selector::after {
+  content: "▼";
+  font-size: 0.5em;
+  color: rgba(255, 255, 255, 0.4);
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
+  z-index: 1;
+}
+
+.interval-selector select:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.error {
+  color: #f44336;
+  font-size: 0.8em;
+  text-align: center;
+  margin-top: 8px;
+  padding: 8px;
+  background: rgba(244, 67, 54, 0.1);
+  border-radius: 4px;
+  display: none;
+}
+
+.loading {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8em;
+  text-align: center;
+  display: none;
+} 
