@@ -131,7 +131,7 @@ function createCoinElement(symbol, data) {
     const changeInfo = formatChange(change);
 
     return `
-      <div class="coin" data-symbol="${symbol}" onclick="window.open('https://www.binance.com/en/trade/${symbol}_USDT', '_blank')">
+      <div class="coin" data-symbol="${symbol}" onclick="openExternalLink('https://www.binance.com/en/trade/${symbol}_USDT')">
         <div class="coin-info">
           <span class="symbol">${symbol}</span>
           <span class="volume">Vol: ${formatNumber(volume)}</span>

@@ -61,6 +61,12 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.05);
   max-height: 52px;
   box-sizing: border-box;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.coin:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .coin:last-child {
@@ -198,5 +204,13 @@ body {
   color: rgba(255, 255, 255, 0.5);
   font-size: 0.8em;
   text-align: center;
-  display: none;
-} 
+}
+
+@media (max-width: 359px) {
+  html, body {
+    min-width: 270px;
+  }
+  .chart-container {
+    display: none;
+  }
+}
