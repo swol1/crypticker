@@ -77,8 +77,9 @@ function updateUI(data) {
 }
 
 function createBadges(coins) {
-  elements.badges.innerHTML = coins.map(
-    (symbol) => `
+  elements.badges.innerHTML = coins
+    .map(
+      (symbol) => `
       <div 
         class="badge ${activeCoins.has(symbol) ? "active" : ""}" 
         data-symbol="${symbol}"
@@ -87,7 +88,8 @@ function createBadges(coins) {
         ${symbol}
       </div>
     `
-  ).join("");
+    )
+    .join("");
 }
 
 function toggleCoin(symbol) {
@@ -129,7 +131,7 @@ function createCoinElement(symbol, data) {
     const changeInfo = formatChange(change);
 
     return `
-      <div class="coin" data-symbol="${symbol}">
+      <div class="coin" data-symbol="${symbol}" onclick="openExternalLink('https://www.binance.com/en/trade/${symbol}_USDT')">
         <div class="coin-info">
           <span class="symbol">${symbol}</span>
           <span class="volume">Vol: ${formatNumber(volume)}</span>
@@ -142,6 +144,7 @@ function createCoinElement(symbol, data) {
       </div>
     `;
   } catch (e) {
+    console.error(`Error creating coin element for ${symbol}: ${e.message}`);
     return "";
   }
 }

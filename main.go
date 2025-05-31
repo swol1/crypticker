@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os/exec"
 	"runtime"
 	"strconv"
 	"sync"
@@ -336,7 +337,11 @@ func main() {
 	defer w.Destroy()
 
 	w.SetSize(370, 230, webview.HintNone)
-	w.Navigate("http://127.0.0.1:8080")
+	w.Navigate(fmt.Sprintf("http://127.0.0.1:8080/?v=%d", time.Now().UnixNano()))
+
+	if err := w.Bind("openExternalLink", openExternalLink); err != nil {
+		log.Fatalf("Failed to bind openExternalLink: %v", err)
+	}
 
 	if runtime.GOOS == "darwin" {
 		time.Sleep(1 * time.Second)
@@ -344,4 +349,23 @@ func main() {
 	}
 
 	w.Run()
+}
+
+func openExternalLink(url string) {
+	var cmd *exec.Cmd
+	switch runtime.GOOS {
+	case "darwin": // macOS
+		cmd = exec.Command("open", url)
+	case "windows": // Windows
+		cmd = exec.Command("cmd", "/c", "start", url)
+	case "linux": // Linux
+		cmd = exec.Command("xdg-open", url)
+	default:
+		log.Printf("Unsupported operating system: %s", runtime.GOOS)
+		return
+	}
+
+	if err := cmd.Start(); err != nil {
+		log.Printf("Failed to open URL %s: %v", url, err)
+	}
 }
