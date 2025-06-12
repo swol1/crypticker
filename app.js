@@ -2,9 +2,9 @@ const DEFAULT_ACTIVE_COINS = ["BTC", "SOL"]; // fix later some day maybe
 
 let ws = null;
 let lastPrices = {};
-let prevPrices = {};
 let activeCoins = new Set(DEFAULT_ACTIVE_COINS);
 let chartManager = new ChartManager();
+let coinPriceHistory = new Map();
 
 const elements = {
   error: document.getElementById("error"),
@@ -124,10 +124,7 @@ function createCoinElement(symbol, data) {
     const change = parseFloat(data.change24h) || 0;
     const volume = parseFloat(data.volume) || 0;
 
-    const prev = prevPrices[symbol] ?? price;
-    const isDown = price < prev;
-    prevPrices[symbol] = price;
-
+    const priceClass = calculatePriceState(symbol, price);
     const changeInfo = formatChange(change);
 
     return `
@@ -137,7 +134,7 @@ function createCoinElement(symbol, data) {
           <span class="volume">Vol: ${formatNumber(volume)}</span>
         </div>
         <div class="price-info">
-          <span class="price${isDown ? " price-down" : ""}">${formatPrice(price)}</span>
+          <span class="price ${priceClass}">${formatPrice(price)}</span>
           <span class="change ${changeInfo.class}">${changeInfo.symbol} ${changeInfo.value}</span>
         </div>
         ${chartManager.createChartContainer(symbol)}
@@ -173,6 +170,56 @@ function formatNumber(num) {
     notation: "compact",
     maximumFractionDigits: 1,
   }).format(num);
+}
+
+function calculatePriceState(symbol, newPrice) {
+  let history = coinPriceHistory.get(symbol) || [];
+  history.push(newPrice);
+  if (history.length > 5) {
+    history.shift();
+  }
+  coinPriceHistory.set(symbol, history);
+
+  if (history.length < 5) {
+    return "price-neutral";
+  }
+
+  const oldestPrice = history[0];
+  const latestPrice = history[history.length - 1];
+  const percentChange = ((latestPrice - oldestPrice) / oldestPrice) * 100;
+
+  let upTicks = 0;
+  let downTicks = 0;
+  let lastDirection = "flat";
+
+  for (let i = 1; i < history.length; i++) {
+    const prev = history[i - 1];
+    const current = history[i];
+
+    if (current > prev) {
+      upTicks++;
+      lastDirection = "up";
+    } else if (current < prev) {
+      downTicks++;
+      lastDirection = "down";
+    }
+  }
+
+  let momentum = lastDirection === "up" ? upTicks : lastDirection === "down" ? downTicks : 0;
+
+  if (lastDirection === "up" && momentum >= 4 && percentChange >= 0.2) {
+    return "price-up-strong";
+  } else if (lastDirection === "up" && momentum >= 3 && percentChange >= 0.05 && percentChange < 0.2) {
+    return "price-up-slight";
+  } else if ((percentChange > -0.05 && percentChange < 0.05) || momentum < 3) {
+    return "price-neutral";
+  } else if (lastDirection === "down" && momentum >= 3 && percentChange <= -0.05 && percentChange > -0.2) {
+    return "price-down-slight";
+  } else if (lastDirection === "down" && momentum >= 4 && percentChange <= -0.2) {
+    return "price-down-strong";
+  }
+
+  return "price-neutral";
 }
 
 function updateInterval(interval) {
