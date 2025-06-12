@@ -2,9 +2,9 @@ const DEFAULT_ACTIVE_COINS = ["BTC", "SOL"]; // fix later some day maybe
 
 let ws = null;
 let lastPrices = {};
-let prevPrices = {};
 let activeCoins = new Set(DEFAULT_ACTIVE_COINS);
 let chartManager = new ChartManager();
+let trendAnalyzer = new TrendAnalyzer();
 
 const elements = {
   error: document.getElementById("error"),
@@ -124,9 +124,12 @@ function createCoinElement(symbol, data) {
     const change = parseFloat(data.change24h) || 0;
     const volume = parseFloat(data.volume) || 0;
 
-    const prev = prevPrices[symbol] ?? price;
-    const isDown = price < prev;
-    prevPrices[symbol] = price;
+    const priceClass = trendAnalyzer.calculatePriceState(symbol, price);
+    // console.log(`[${symbol}] Price class calculation:`, {
+    //   price,
+    //   priceClass,
+    //   element: document.querySelector(`.coin[data-symbol="${symbol}"] .price`),
+    // });
 
     const changeInfo = formatChange(change);
 
@@ -137,7 +140,7 @@ function createCoinElement(symbol, data) {
           <span class="volume">Vol: ${formatNumber(volume)}</span>
         </div>
         <div class="price-info">
-          <span class="price${isDown ? " price-down" : ""}">${formatPrice(price)}</span>
+          <span class="price ${priceClass}">${formatPrice(price)}</span>
           <span class="change ${changeInfo.class}">${changeInfo.symbol} ${changeInfo.value}</span>
         </div>
         ${chartManager.createChartContainer(symbol)}
@@ -180,5 +183,7 @@ function updateInterval(interval) {
     ws.send(JSON.stringify({ interval }));
   }
 }
+
+window.updateInterval = updateInterval;
 
 initializeApp();

@@ -1,3 +1,13 @@
+:root {
+  --text-color: #ffffff;
+  --price-up-strong: #00ff00;
+  --price-up-slight: #90EE90;
+  --price-down-slight: #FFB6C1;
+  --price-down-strong: #ff0000;
+  --change-positive: #00ff00;
+  --change-negative: #ff0000;
+}
+
 html, body {
   min-width: 350px;
   margin: 0;
@@ -5,7 +15,7 @@ html, body {
   overflow-x: hidden;
   overflow-y: auto;
   background: #0a0a0a;
-  color: #ffffff;
+  color: var(--text-color);
   font-family: -apple-system, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 16px;
   line-height: 1.4;
@@ -97,28 +107,25 @@ body {
   gap: 2px;
 }
 
-.price {
+.price-info .price {
   font-family: 'JetBrains Mono', 'SF Mono', 'Menlo', monospace;
-  color: #64ffda;
   font-size: 0.9em;
+  color: var(--text-color);
+  transition: color 0.3s ease;
 }
 
-.price-down {
-  color: #f44336;
-}
+.price-up-strong { color: var(--price-up-strong) !important; font-weight: bold; }
+.price-up-slight { color: var(--price-up-slight) !important; }
+.price-down-slight { color: var(--price-down-slight) !important; }
+.price-down-strong { color: var(--price-down-strong) !important; font-weight: bold; }
 
 .change {
   font-size: 0.75em;
   font-weight: 500;
 }
 
-.change.positive {
-  color: #4caf50;
-}
-
-.change.negative {
-  color: #f44336;
-}
+.change.positive { color: var(--change-positive); }
+.change.negative { color: var(--change-negative); }
 
 .chart-container {
   width: 80px;

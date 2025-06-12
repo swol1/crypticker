@@ -84,7 +84,6 @@ func logDebug(format string, v ...interface{}) {
 
 func fetchPrice(ctx context.Context, symbol string) (*PriceResponse, error) {
 	url := fmt.Sprintf("https://api.binance.com/api/v3/ticker/24hr?symbol=%sUSDT", symbol)
-
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("creating request: %w", err)
@@ -111,7 +110,6 @@ func fetchPrice(ctx context.Context, symbol string) (*PriceResponse, error) {
 
 func fetchHistoricalData(ctx context.Context, symbol string, interval string) ([]float64, error) {
 	config := intervalConfigs[interval]
-
 	endTime := time.Now()
 	startTime := endTime.Add(-config.startTime)
 
@@ -302,37 +300,24 @@ func updatePrices() {
 
 func main() {
 	fs := http.FileServer(http.Dir("."))
-	http.Handle("/", fs)
+	http.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+		w.Header().Set("Pragma", "no-cache")
+		w.Header().Set("Expires", "0")
+		fs.ServeHTTP(w, r)
+	}))
 
 	http.HandleFunc("/ws", wsHandler)
 	http.HandleFunc("/coins", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(availableCoins)
 	})
-	http.HandleFunc("/history", func(w http.ResponseWriter, r *http.Request) {
-		symbol := r.URL.Query().Get("symbol")
-		interval := r.URL.Query().Get("interval")
-
-		if symbol == "" || interval == "" {
-			http.Error(w, "Missing symbol or interval", http.StatusBadRequest)
-			return
-		}
-
-		history, err := fetchHistoricalData(r.Context(), symbol, interval)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(history)
-	})
 
 	go func() {
 		log.Fatal(http.ListenAndServe("127.0.0.1:8080", nil))
 	}()
 	go updatePrices()
-	debug = false
+
 	w := webview.New(debug)
 	defer w.Destroy()
 
@@ -341,6 +326,12 @@ func main() {
 
 	if err := w.Bind("openExternalLink", openExternalLink); err != nil {
 		log.Fatalf("Failed to bind openExternalLink: %v", err)
+	}
+
+	if err := w.Bind("logFromJS", func(message string) {
+		log.Printf("[JS_LOG] %s", message)
+	}); err != nil {
+		log.Fatalf("Failed to bind logFromJS: %v", err)
 	}
 
 	if runtime.GOOS == "darwin" {
